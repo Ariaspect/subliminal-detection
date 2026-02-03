@@ -1,0 +1,28 @@
+[project]
+name = "subliminal-detection"
+version = "0.1.0"
+description = "SAE feature extraction and feature steering evaluation"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "altair>=6.0.0",
+    "datasets>=4.5.0",
+    "easysteer",
+    "numpy>=1.26.4",
+    "sae-lens>=6.30.2",
+    "streamlit>=1.53.1",
+    "torch>=2.9.0",
+    "tqdm>=4.67.1",
+    "transformer-lens>=2.17.0",
+    "vllm",
+]
+
+[tool.uv.workspace]
+members = [
+    "EasySteer/vllm-steer",
+    "EasySteer",
+]
+
+[tool.uv.sources]
+vllm = { workspace = true }
+easysteer = { workspace = true }
