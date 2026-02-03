@@ -13,48 +13,16 @@ LABELS_PATH = "/raid/MLP/mjkee/subliminal-detection/data/Llama-3.1-8B-Instruct.j
 
 @st.cache_data(show_spinner=False)
 def load_npz_with_stats(path: str):
-    """Load NPZ once and compute per-latent stats.
-
-    Returns a dict containing:
-      - activations: ndarray [num_samples, num_latents]
-      - latent_means: ndarray [num_latents]
-      - latent_frequency: ndarray [num_latents] proportion in [0,1]
-      - num_samples, num_latents: ints
-      - meta: other fields from the NPZ with 0-d arrays converted to scalars
-    """
     data = np.load(path, allow_pickle=True)
     items = {k: data[k] for k in data.files}
-    activations = items.get("activations")
-    if activations is None:
-        raise ValueError("NPZ missing 'activations' array")
-    if activations.ndim != 2:
-        raise ValueError("'activations' must be 2D [num_samples, num_latents]")
-
-    num_samples, num_latents = activations.shape
-    latent_means = activations.mean(axis=0)
-    nonzero_counts = (activations != 0).sum(axis=0)
-    latent_active_means = np.divide(
-        activations.sum(axis=0),
-        nonzero_counts,
-        out=np.zeros(num_latents, dtype=activations.dtype),
-        where=nonzero_counts > 0,
-    )
-    latent_frequency = (activations != 0).sum(axis=0) / num_samples
-
-    # Prepare metadata with scalars
-    meta = {k: v for k, v in items.items() if k != "activations"}
-    for k, v in list(meta.items()):
-        if isinstance(v, np.ndarray) and v.shape == ():
-            meta[k] = v.item()
 
     return {
-        "activations": activations,
-        "latent_means": latent_means,
-        "latent_active_means": latent_active_means,
-        "latent_frequency": latent_frequency,
-        "num_samples": num_samples,
-        "num_latents": num_latents,
-        "meta": meta,
+        "latent_means": items.get("latent_means"),
+        "latent_active_means": items.get("latent_active_means"),
+        "latent_frequency": items.get("latent_frequency"),
+        "num_samples": items.get("num_samples"),
+        "num_latents": items.get("num_latents"),
+        "meta": items.get("meta"),
     }
 
 
